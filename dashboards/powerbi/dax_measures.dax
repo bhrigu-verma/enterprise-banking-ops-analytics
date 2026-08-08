@@ -1,0 +1,72 @@
+// Aegis Crest Financial - Enterprise Banking Operations Analytics Platform
+// DAX Measures Library (dashboards/powerbi/dax_measures.dax)
+
+// --- 1. FINANCIAL MEASURES ---
+Total Deposits = SUM(accounts[current_balance])
+
+Total Active Loans = CALCULATE(SUM(loans[principal_amount]), loans[status] IN {"Active", "Approved"})
+
+Total Defaulted Loan Principal = CALCULATE(SUM(loans[principal_amount]), loans[status] = "Defaulted")
+
+Portfolio Default Rate Pct = DIVIDE([Total Defaulted Loan Principal], [Total Active Loans], 0) * 100
+
+Est Annual Interest Revenue = SUMX(loans, loans[principal_amount] * loans[interest_rate])
+
+Avg Transaction Size = AVERAGE(transactions[amount])
+
+Total Card Spend Volume = SUM(transactions[amount])
+
+
+// --- 2. CUSTOMER & ONBOARDING MEASURES ---
+Total Customers = COUNTROWS(customers)
+
+FastTrack Customer Pct = DIVIDE(
+    CALCULATE(COUNTROWS(customers), customers[is_digital_fasttrack] = 1),
+    COUNTROWS(customers),
+    0
+) * 100
+
+Avg FICO Score = AVERAGE(customers[credit_score])
+
+Avg Debt To Income Ratio = AVERAGE(customers[dti_ratio])
+
+Customer Churn Risk Count = CALCULATE(
+    COUNTROWS(customers),
+    customers[credit_score] < 600 || customers[dti_ratio] > 0.45
+)
+
+
+// --- 3. RISK & FRAUD MEASURES ---
+Confirmed Fraud Losses = CALCULATE(SUM(fraud_alerts[loss_amount]), fraud_alerts[status] = "Confirmed Fraud")
+
+Fraud Rate Pct = DIVIDE(
+    CALCULATE(COUNTROWS(transactions), transactions[is_flagged_fraud] = 1),
+    COUNTROWS(transactions),
+    0
+) * 100
+
+High Risk Fraud Alert Count = CALCULATE(COUNTROWS(fraud_alerts), fraud_alerts[risk_score] >= 75)
+
+Net Operational Loss = [Total Defaulted Loan Principal] + [Confirmed Fraud Losses]
+
+
+// --- 4. OPERATIONS & SLA MEASURES ---
+Avg Loan Turnaround Days = AVERAGE(loans[approval_turnaround_days])
+
+SLA Variance Days = [Avg Loan Turnaround Days] - 2.00
+
+Avg Support Resolution Hours = AVERAGE(support_tickets[resolution_time_hours])
+
+Avg CSAT Score = AVERAGE(support_tickets[customer_satisfaction_score])
+
+Ticket Escalation Rate Pct = DIVIDE(
+    CALCULATE(COUNTROWS(support_tickets), support_tickets[escalation_flag] = 1),
+    COUNTROWS(support_tickets),
+    0
+) * 100
+
+FastTrack SLA Breach Pct = DIVIDE(
+    CALCULATE(COUNTROWS(loans), loans[is_fasttrack_approval] = 1 && loans[approval_turnaround_days] > 2.5),
+    CALCULATE(COUNTROWS(loans), loans[is_fasttrack_approval] = 1),
+    0
+) * 100

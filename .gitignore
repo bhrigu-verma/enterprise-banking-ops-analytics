@@ -1,0 +1,11 @@
+# Dependencies & Build artifacts
+node_modules/
+.next/
+out/
+build/
+*.log
+.DS_Store
+
+# Ignore large generated db binaries if needed or track for portability
+# aegis_banking.db
+aegis_banking.db
