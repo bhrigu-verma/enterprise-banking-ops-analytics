@@ -11,6 +11,13 @@ Designed as a flagship technical artifact for J.P. Morgan Corporate Analyst Deve
 
 ---
 
+## 🌐 Live Production Deployment
+**View the live web application here:** [https://webapp-woad-six-48.vercel.app](https://webapp-woad-six-48.vercel.app)
+
+*(Deployed on Vercel Edge Network with Turso LibSQL remote database)*
+
+---
+
 ## 🔗 Quick Navigation & Key Artifacts
 
 - 🚀 **[Interactive Web Dashboard & NL-to-SQL Assistant](dashboards/webapp/pages/index.js)**: Next.js + Recharts + Tailwind dark theme app with live query engine.
@@ -104,23 +111,31 @@ erDiagram
 
 ---
 
-## 💻 Local Setup & Execution Guide
+## 💻 Architecture & Local Setup Guide
+
+This project has been migrated to a serverless architecture for global deployment:
+- **Frontend:** Next.js 14, Recharts, Tailwind CSS (Hosted on Vercel)
+- **Database:** Turso (LibSQL / SQLite edge database)
+- **Deployment:** Vercel serverless Edge functions utilizing `@libsql/client`
+
+### Local Execution (If you want to run it yourself):
 
 ```bash
 # 1. Clone repo
 git clone https://github.com/bhriguverma/enterprise-banking-ops-analytics.git
 cd enterprise-banking-ops-analytics
 
-# 2. Populate 861k-row SQLite database
+# 2. Populate local SQLite database (optional, for local analysis)
 python3 data_generation/generator.py
 
-# 3. Load views & stored procedures
+# 3. Load views & stored procedures (optional)
 python3 -c "import sqlite3; conn=sqlite3.connect('aegis_banking.db'); conn.executescript(open('database/views.sql').read()); conn.executescript(open('database/stored_procedures.sql').read()); conn.commit();"
 
 # 4. Launch Next.js web application
 cd dashboards/webapp
 npm install
-npm run build
+
+# Note: You must create a .env.local file with TURSO_DATABASE_URL and TURSO_AUTH_TOKEN
 npm run dev
 # Open http://localhost:3000
 
