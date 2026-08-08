@@ -9,3 +9,5 @@ build/
 # Ignore large generated db binaries if needed or track for portability
 # aegis_banking.db
 aegis_banking.db
+aegis_banking.db-shm
+aegis_banking.db-wal
